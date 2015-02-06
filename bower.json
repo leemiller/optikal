@@ -1,0 +1,36 @@
+{
+  "name": "Optikal",
+  "version": "0.0.0",
+  "homepage": "https://github.com/leemiller/optikal",
+  "authors": [
+    "Lee Miller <lee@c2tech.rocks>"
+  ],
+  "description": "Visualizations of music notes, scales, chords, and modes using color.",
+  "main": "main.js",
+  "keywords": [
+    "music"
+  ],
+  "license": "Apahce 2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "console-polyfill": "~0.1.0",
+    "lodash": "~1.3.1",
+    "jquery": "~2.0.2",
+    "normalize-css": "~2.1.2"
+  },
+  "overrides": {
+    "backbone": {
+      "dependencies": {
+        "lodash": "*",
+        "jquery": "*"
+      },
+      "main": "backbone.js"
+    }
+  }
+}

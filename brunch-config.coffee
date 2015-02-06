@@ -31,3 +31,9 @@ exports.config =
   plugins: 
     sass:
       debug: 'comments'
+    autoReload:
+        enabled:
+          css: on
+          js: on
+          assets: off
+        port: [1337,1338,1339]

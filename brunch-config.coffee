@@ -1,7 +1,7 @@
 exports.config =
   # See https://github.com/brunch/brunch/blob/master/docs/config.md for documentation.
   paths:
-    public: 'www'  
+    public: 'www'
   files:
     javascripts:
       joinTo:
@@ -15,7 +15,7 @@ exports.config =
     stylesheets:
       defaultExtension: 'sass'
       joinTo:
-        'stylesheets/app.css': /^(app|vendor)/
+        'stylesheets/app.css': /^(app|vendor|bower_components)/
         'test/stylesheets/test.css': /^test/
       order:
         before: []

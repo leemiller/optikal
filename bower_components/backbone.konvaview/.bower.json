@@ -1,0 +1,38 @@
+{
+  "name": "backbone.KonvaView",
+  "version": "0.9.5",
+  "homepage": "https://github.com/slash-system/backbone.konvaview",
+  "authors": [
+    "Anton Lavrenov"
+  ],
+  "description": "Special Backbone View for canvas via KonvaJS",
+  "keywords": [
+    "backbone",
+    "canvas",
+    "konvajs"
+  ],
+  "dependencies": {
+    "backbone": ">=1.0.0",
+    "underscore": ">=1.6.0",
+    "konva": ">=0.7.0"
+  },
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "main": "backbone.KonvaView.js",
+  "_release": "0.9.5",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.9.5",
+    "commit": "dfd74b5981093d6074fa1ecc417347753f9fa98c"
+  },
+  "_source": "git://github.com/slash-system/backbone.konvaview.git",
+  "_target": "~0.9.5",
+  "_originalSource": "backbone.konvaview",
+  "_direct": true
+}

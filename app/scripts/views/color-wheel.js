@@ -1,18 +1,5 @@
 var Semitones = require('../collections/semitones');
-var allChromaticScales = {
-    'A': new Semitones('A'),
-    'A#': new Semitones('A#'),
-    'B': new Semitones('B'),
-    'C': new Semitones('C'),
-    'C#': new Semitones('C#'),
-    'D': new Semitones('D'),
-    'D#': new Semitones('D#'),
-    'E': new Semitones('E'),
-    'F': new Semitones('F'),
-    'F#': new Semitones('F#'),
-    'G': new Semitones('G'),
-    'G#': new Semitones('G#')
-};
+
 var eachSectionDegrees = 360 / 12;
 var startRotation = -90 - (eachSectionDegrees / 2);
 
@@ -47,7 +34,7 @@ module.exports = Backbone.KonvaView.extend({
                 radius: 150,
                 angle: eachSectionDegrees,
                 name: 'note-wedge',
-                fill: '#' + semitones.get('color'),
+                fill: semitones.get('color'),
                 rotation: rotation,
                 startRotation: rotation,
                 scale: {
@@ -67,9 +54,9 @@ module.exports = Backbone.KonvaView.extend({
 
             wedge.moveTo(this.mouseoverLayer);
             
-            var scale = 1.25;
-            var newAngle = eachSectionDegrees * 1.25;
-            var newRotation = wedge.getAttr('startRotation') - ((eachSectionDegrees * 1.25) / 2) + (eachSectionDegrees /2)
+            var scale = 1.15;
+            var newAngle = eachSectionDegrees * scale;
+            var newRotation = wedge.getAttr('startRotation') - ((eachSectionDegrees * scale) / 2) + (eachSectionDegrees /2)
  
             tween = new Konva.Tween({
                 node: wedge,
@@ -103,5 +90,12 @@ module.exports = Backbone.KonvaView.extend({
     render: function() {
         this.baseLayer.add(this.el);
         this.baseLayer.draw();
+    },
+
+    destroy: function() {
+        group.destroyChildren();
+        group.destroy();
+        this.baseLayer.destroy();
+        this.mouseoverLayer.destroy();
     }
 }); 

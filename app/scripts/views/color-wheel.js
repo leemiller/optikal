@@ -1,5 +1,3 @@
-var Semitones = require('../collections/semitones');
-
 var eachSectionDegrees = 360 / 12;
 var startRotation = -90 - (eachSectionDegrees / 2);
 
@@ -107,6 +105,10 @@ module.exports = Backbone.KonvaView.extend({
         'mouseout .note-wedge': function(e) {
             var wedge = e.target;
             this.resetWedge(wedge);
+        },
+        'click .note-wedge': function(e) {
+            var wedge = e.target;
+            this.trigger('change:tonic', wedge.getAttr('id').split('-')[1]);
         }
     },
 

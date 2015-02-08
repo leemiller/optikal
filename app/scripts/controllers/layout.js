@@ -80,8 +80,8 @@ module.exports = Backbone.Marionette.Controller.extend({
         this.stage.add(constellationLayer);
         var constellationView = new ConstellationView({
             stage: this.stage,
-            layer: constellationLayer,
-            pitches: [0, 2, 4, 5, 7, 9, 11]
+            baseLayer: constellationLayer,
+            collection: [0, 2, 4, 5, 7, 9, 11]
         });
     }
 })

@@ -1,75 +1,59 @@
 var eachSectionDegrees = 360 / 12;
 var startRotation = -90;
 
-var group;
+var KonvaView = require('./konva');
 
-module.exports = Backbone.KonvaView.extend({
-    endPoints: null,
-
+module.exports = KonvaView.extend({
     initialize: function(options) {
         options = options || {};
-        this.layer = options.layer;
+        this.baseLayer = options.baseLayer;
         this.stage = options.stage;
         this.options = options;
-        this.endPoints = _.map(this.options.pitches, function(step) {
-            var rotation = startRotation + (eachSectionDegrees * step);
-            var endPoint = this.getAngle(250, 250, rotation, 175);
-            return endPoint;
-        }, this);
-
-        this.addLines();
+        
         this.render();
     },
 
-    addLines: function() {
-        var nonTonicPoints = _.rest(this.endPoints);
-        _.each(nonTonicPoints, function(endPoint) {
-            var line = new Konva.Line({
-                points: [250, 250, endPoint.x, endPoint.y],
-                stroke: 'black',
-                strokeWidth: 2
-            });
-            line.setListening(false);
-            group.add(line);
+    _addToGroup: function() {
+        var endPoints = _.map(this.collection, function(step) {
+            var rotation = startRotation + (eachSectionDegrees * step);
+            var endPoint = this.getPositionFromAngle(250, 250, rotation, 150);
+            return endPoint;
         }, this);
-        var tonicPoint = _.first(this.endPoints);
-        var arrow = new Konva.Arrow({
-            points: [250, 250, tonicPoint.x, tonicPoint.y],
-            stroke: 'black',
-            strokeWidth: 2,
+        var nonTonicPoints = _.rest(endPoints);
+        _.each(nonTonicPoints, function(endPoint) {
+            var attributes = this._getLineAttributes(endPoint);
+            var line = new Konva.Line(attributes);
+            line.setListening(false);
+            this.group.add(line);
+        }, this);
+        var tonicPoint = _.first(endPoints);
+        var arrowAttributes = this._getLineAttributes(tonicPoint);
+        arrowAttributes = _.extend(arrowAttributes, {
             pointerLength: 12,
             pointerWidth: 8,
             radius: 10,
-            fill: 'black'
         });
-
+        var arrow = new Konva.Arrow(arrowAttributes);
         arrow.setListening(false);
-        group.add(arrow);
+        this.group.add(arrow);
     },
 
-    el: function() {
-        group = new Konva.Group();  
-
-        return group;
-    },
-
-    getAngle: function(x, y, angle, length) {
-        var radians = angle * (Math.PI / 180);
-        return { 
-            x: x + length * Math.cos(radians), 
-            y: y + length * Math.sin(radians) 
+    _getLineAttributes: function(endPoint) {
+        return {
+            points: [250, 250, endPoint.x, endPoint.y],
+            fill: 'white',
+            stroke: 'white',
+            strokeWidth: 2,
+            shadowColor: 'black',
+            shadowBlur: 3,
+            shadowOffset: {
+                x: 0,
+                y: 0
+            }  
         };
     },
 
-    render: function() {
-        this.layer.add(this.el);
-        this.stage.draw();
-    },
-
-    destroy: function() {
-        this.undelegateEvents();
-        group.destroyChildren();
-        group.destroy();
-        this.layer.destroy();
+    onDestroy: function() {
+        this.baseLayer.destroy();
     }
 }); 

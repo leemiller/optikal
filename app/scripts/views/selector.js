@@ -2,15 +2,21 @@ var template = require('./templates/item-selector');
 var config = require('config');
 module.exports = Backbone.Marionette.ItemView.extend({
     tagName: 'div',
-    className: 'tonic-selector-container',
+    className: 'selector-container',
     template: template,
 
     ui: {
-        tonicSelect: 'select.tonic'
+        tonicSelect: 'select.tonic',
+        modeSelect: 'select.mode'
     },
 
     events: {
-        'change @ui.tonicSelect': 'changeTonic'
+        'change @ui.tonicSelect': 'changeTonic',
+        'change @ui.modeSelect': 'changeMode'
+    },
+
+    changeMode: function(event) {
+        this.trigger('change:mode', $(event.currentTarget).val());
     },
 
     changeTonic: function(event) {
@@ -23,7 +29,8 @@ module.exports = Backbone.Marionette.ItemView.extend({
 
     serializeData: function() {
         return {
-            notes: config.allPitches.split(' ')
+            notes: config.allPitches.split(' '),
+            modes: _.keys(config.allModes)
         };
     }
 });

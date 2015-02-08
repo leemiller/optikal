@@ -23,13 +23,16 @@ var semitoneCollection = Backbone.Collection.extend({
     
     initialize: function(models, options) {
         this.options = options || {};
+        this.noteCache = [];
         var tonic = this.options.tonic;
 
         var notes = this._getNotesWithTonic(tonic);
-        
-        _(notes).each(function(note) {
+
+        _.each(notes, function(note) {
             this.create(note);
+            this.noteCache.push(note.note);
         }, this);
+
     },
 
     getTonic: function() {
@@ -37,32 +40,29 @@ var semitoneCollection = Backbone.Collection.extend({
     },
 
     getNotes: function() {
-        if (_.isNull(this.noteCache)) {
-            this.noteCache = this.map(function(semitone) {
-                return semitone.get('note');
-            });
-        }
-
         return this.noteCache.join(' ');
+    },
+
+    getNotesArray: function() {
+        return this.noteCache;
     },
 
     _getNotesWithTonic: function(tonic) {
         var tonicIndex;
         var notes = [];
-        for (var i = 0; i < semitones.length; i++) {
-            var semitone = semitones[i];
+        _.each(semitones, function(semitone, index) {
             if (semitone.note === tonic) {
-                tonicIndex = i;
+                tonicIndex = index;
             }
             notes.push({
                 note: semitone.note,
                 color: semitone.color
             });
-        }
+        });
 
-        var notesAtTonic = notes.splice(tonicIndex, notes.length - tonicIndex);
-        notesAtTonic = notesAtTonic.concat(notes);
-        return notesAtTonic;
+        var notesFromTonic = notes.splice(tonicIndex, notes.length - tonicIndex);
+        notesFromTonic = notesFromTonic.concat(notes);
+        return notesFromTonic;
     },
 
     sync: function() {

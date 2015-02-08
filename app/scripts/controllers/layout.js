@@ -1,13 +1,13 @@
 var LayoutView = require('../views/layout');
 var ColorWheelView = require('scripts/views/color-wheel');
 var TonicSelectorView = require('../views/tonic-selector');
-var Semitones = require('scripts/collections/semitones');
+var Pitches = require('scripts/collections/pitches');
 var ConstellationView = require('../views/constellation');
 var config = require('config');
 
 var allChromaticScales = {};
 _.each(config.allPitches.split(' '), function(tonic) {
-    allChromaticScales[tonic] = new Semitones(tonic);
+    allChromaticScales[tonic] = new Pitches(tonic);
 });
 
 module.exports = Backbone.Marionette.Controller.extend({
@@ -66,12 +66,11 @@ module.exports = Backbone.Marionette.Controller.extend({
     },
 
     _showColorWheel: function(tonic) {
-        console.log(tonic);
         this.wheel = new ColorWheelView({
             stage: this.stage,
             baseLayer: this.baseLayer,
             mouseoverLayer: this.mouseoverLayer, 
-            semitones: allChromaticScales[tonic]
+            collection: allChromaticScales[tonic]
         });
         this.wheel.on('change:tonic', this._changeTonic, this);
     },

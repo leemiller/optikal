@@ -1,7 +1,7 @@
-var semitoneModel = require('../models/semitone');
+var PitchModel = require('../models/pitch');
 var config = require('config');
 
-var semitones = [
+var pitches = [
     {note: 'C', color: '#ff0000'},
     {note: 'C#', color: '#ff6600'},
     {note: 'D', color:'#ff9400'},
@@ -16,9 +16,9 @@ var semitones = [
     {note: 'B', color: '#c5007c'}
 ];
 
-var semitoneCollection = Backbone.Collection.extend({
-    model: semitoneModel,
-    url: '/semitones',
+var PitchCollection = Backbone.Collection.extend({
+    model: PitchModel,
+    url: '/pitches',
     noteCache: null,
     
     initialize: function(models, options) {
@@ -50,13 +50,13 @@ var semitoneCollection = Backbone.Collection.extend({
     _getNotesWithTonic: function(tonic) {
         var tonicIndex;
         var notes = [];
-        _.each(semitones, function(semitone, index) {
-            if (semitone.note === tonic) {
+        _.each(pitches, function(pitch, index) {
+            if (pitch.note === tonic) {
                 tonicIndex = index;
             }
             notes.push({
-                note: semitone.note,
-                color: semitone.color
+                note: pitch.note,
+                color: pitch.color
             });
         });
 
@@ -72,5 +72,5 @@ var semitoneCollection = Backbone.Collection.extend({
 
 module.exports = function(tonic) {
     var tonic = tonic || config.defaultTonic;
-    return new semitoneCollection(null, {tonic: tonic});
+    return new PitchCollection(null, {tonic: tonic});
 };

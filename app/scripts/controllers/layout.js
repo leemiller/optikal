@@ -1,6 +1,6 @@
 var LayoutView = require('../views/layout');
 var ColorWheelView = require('scripts/views/color-wheel');
-var TonicSelectorView = require('../views/tonic-selector');
+var SelectorView = require('../views/selector');
 var Pitches = require('scripts/collections/pitches');
 var ConstellationView = require('../views/constellation');
 var config = require('config');
@@ -13,8 +13,10 @@ _.each(config.allPitches.split(' '), function(tonic) {
 module.exports = Backbone.Marionette.Controller.extend({
     baseLayer: null,
     mouseoverLayer: null,
+    constellationLayer: null,
     stage: null,
     wheel: null,
+    constellation: null,
 
     initialize: function(options) {
         this.options = options || {};
@@ -25,14 +27,30 @@ module.exports = Backbone.Marionette.Controller.extend({
         this.options.region.show(layoutView);
         this._initializeStageAndLayers();
 
-        var tonicSelectorView = new TonicSelectorView();
-        tonicSelectorView.on('before:destroy', function() {
-            tonicSelectorView.off();
+        var selectorView = new SelectorView();
+        selectorView.on('before:destroy', function() {
+            selectorView.off();
         }, this);
-        tonicSelectorView.on('change:tonic', this._changeTonic, this);
-        layoutView.getRegion('tonicSelector').show(tonicSelectorView);
+        selectorView.on('change:tonic', this._changeTonic, this);
+        selectorView.on('change:mode', this._changeMode, this);
+        layoutView.getRegion('selector').show(selectorView);
         this._showColorWheel(config.defaultTonic);
         this._showConstellation();
+    },
+
+    _changeMode: function(newMode) {
+        if (_.isNull(this.constellation)) return;
+        this.constellation.off();
+        this.constellation.destroy();
+        this.constellationLayer.destroyChildren();
+        this.stage.draw();
+        var modePositions = config.allModes[newMode];
+        this.constellation = new ConstellationView({
+            stage: this.stage,
+            baseLayer: this.constellationLayer,
+            collection: modePositions
+        });
+        this.stage.draw();
     },
 
     _changeTonic: function(newTonic) {
@@ -72,12 +90,13 @@ module.exports = Backbone.Marionette.Controller.extend({
     },
 
     _showConstellation: function() {
-        var constellationLayer = new Konva.Layer();
-        this.stage.add(constellationLayer);
-        var constellationView = new ConstellationView({
+        this.constellationLayer = new Konva.Layer();
+        this.stage.add(this.constellationLayer);
+        var defaultMode = config.allModes[config.defaultMode];
+        this.constellation = new ConstellationView({
             stage: this.stage,
-            baseLayer: constellationLayer,
-            collection: [0, 2, 4, 5, 7, 9, 11]
+            baseLayer: this.constellationLayer,
+            collection: defaultMode
         });
     }
 })

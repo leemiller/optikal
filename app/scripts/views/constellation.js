@@ -54,6 +54,6 @@ module.exports = KonvaView.extend({
     },
 
     onDestroy: function() {
-        this.baseLayer.destroy();
+        //this.baseLayer.destroy();
     }
 }); 

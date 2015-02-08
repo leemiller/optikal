@@ -4,6 +4,9 @@ var startRotation = -90;
 var KonvaView = require('./konva');
 
 module.exports = KonvaView.extend({
+    labelGroup: null,
+    linesGroup: null,
+
     initialize: function(options) {
         options = options || {};
         this.baseLayer = options.baseLayer;
@@ -14,6 +17,48 @@ module.exports = KonvaView.extend({
     },
 
     _addToGroup: function() {
+        this.labelGroup = new Konva.Group();
+        this.linesGroup = new Konva.Group();
+
+        var endPoints = [];
+        var labelPoints = [];
+        _.each(this.collection, function(pitchNumber) {
+            var rotation = startRotation + (eachSectionDegrees * pitchNumber);
+            var endPoint = this.getPositionFromAngle(250, 250, rotation, 150);
+            endPoints.push(endPoint);
+
+            var labelPoint = this.getPositionFromAngle(250, 250, rotation, 162);
+            labelPoints.push(labelPoint);
+        }, this);
+        this._addLines(endPoints);
+        this._addLabels(labelPoints);
+
+        this.group.add(this.linesGroup);
+        this.group.add(this.labelGroup);
+    },
+
+    _addLabels: function(labelPoints) {
+        _.each(labelPoints, function(labelPoint, index) {
+            var label = new Konva.Text({
+                x: labelPoint.x,
+                y: labelPoint.y,
+                text: index+1,
+                id: 'number-label-' + (index+1),
+                fontSize: 16,
+                fill: 'white',
+                shadowColor: 'black',
+                shadowBlur: 4
+            });
+            label.setOffset({
+                x: label.getWidth() / 2,
+                y: label.getHeight() / 2
+            });
+            this.labelGroup.add(label);
+        }, this);
+        
+    },
+
+    _addLines: function(endPoints) {
         var endPoints = _.map(this.collection, function(step) {
             var rotation = startRotation + (eachSectionDegrees * step);
             var endPoint = this.getPositionFromAngle(250, 250, rotation, 150);
@@ -35,7 +80,7 @@ module.exports = KonvaView.extend({
         });
         var arrow = new Konva.Arrow(arrowAttributes);
         arrow.setListening(false);
-        this.group.add(arrow);
+        this.linesGroup.add(arrow);
     },
 
     _getLineAttributes: function(endPoint) {
@@ -54,6 +99,9 @@ module.exports = KonvaView.extend({
     },
 
     onDestroy: function() {
-        //this.baseLayer.destroy();
+        this.linesGroup.destroyChildren();
+        this.labelGroup.destroyChildren();
+        this.linesGroup.destroy();
+        this.labelGroup.destroy();
     }
 }); 

@@ -3,6 +3,6 @@ module.exports = {
     should: should,
 
     init: function() {
-        require('test/collections/semitones_test');
+        require('test/collections/pitches_test');
     }
 }

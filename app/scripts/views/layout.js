@@ -5,6 +5,6 @@ module.exports = Backbone.Marionette.LayoutView.extend({
     template: template,
     regions: {
         colorWheel: '#color-wheel-container',
-        tonicSelector: '#tonic-selector'
+        selector: '#selector'
     }
 });

@@ -1,46 +1,76 @@
 var eachSectionDegrees = 360 / 12;
 var startRotation = -90 - (eachSectionDegrees / 2);
 
-var group;
-var labelGroup;
-var tween;
+var KonvaView = require('./konva');
 
-module.exports = Backbone.KonvaView.extend({
+module.exports = KonvaView.extend({
+    wedgeGroup: null,
+    labelGroup: null,
+    currentTween: null,
+
+    events: {
+        'mouseover .note-wedge': '_scaleUpWedge',
+        'mouseout .note-wedge': '_resetWedge',
+        'click .note-wedge': '_changeTonic'
+    },
+
     initialize: function(options) {
         options = options || {};
         this.baseLayer = options.baseLayer;
         this.mouseoverLayer = options.mouseoverLayer;
         this.stage = options.stage;
-        this.semitones = options.semitones;
         this.options = options;
-        this.addWedges();
+
         this.render();
     },
 
-    el: function() {
-        group = new Konva.Group();
-        labelGroup = new Konva.Group();    
-
-        return group;
+    _changeTonic: function(e) {
+        var wedge = e.target;
+        this.trigger('change:tonic', wedge.getAttr('id').split('-')[1]);
     },
 
-    addWedges: function() {
-        this.semitones.each(function(semitone, index) {
-            this._addWedge(semitone, index);
-            this._addLabel(semitone, index);
+    _scaleUpWedge: function(e) {
+        var wedge = e.target;
+
+        wedge.moveTo(this.mouseoverLayer);
+        
+        var scale = 1.15;
+        var newAngle = eachSectionDegrees * scale;
+        var newRotation = wedge.getAttr('startRotation') - ((eachSectionDegrees * scale) / 2) + (eachSectionDegrees /2);
+
+        this.currentTween = new Konva.Tween({
+            node: wedge,
+            duration: 0.5,
+            easing: Konva.Easings.ElasticEaseOut,
+            scaleX: scale,
+            scaleY: scale,
+            angle: newAngle,
+            rotation: newRotation
+        });
+        this.currentTween.play();
+        this.stage.draw();
+    },
+
+    _addToGroup: function() {
+        this.wedgeGroup = new Konva.Group();
+        this.labelGroup = new Konva.Group();
+        this.collection.each(function(pitch, index) {
+            this._addWedge(pitch, index);
+            this._addLabel(pitch, index);
         }, this);
-        this.delegateEvents();
+        this.group.add(this.wedgeGroup);
+        this.group.add(this.labelGroup);
     },
 
-    _addLabel: function(semitone, index) {
+    _addLabel: function(pitch, index) {
         var startRot = -90;
         var rotation = startRot + (eachSectionDegrees * index);
-        var pos = this.getAngle(250, 250, rotation, 200);
+        var pos = this.getPositionFromAngle(250, 250, rotation, 200);
         var label = new Konva.Text({
             x: pos.x,
             y: pos.y,
-            text: semitone.get('note'),
-            id: 'label-' + semitone.get('note'),
+            text: pitch.get('note'),
+            id: 'label-' + pitch.get('note'),
             fontSize: 24,
             fill: 'black'
         });
@@ -48,10 +78,10 @@ module.exports = Backbone.KonvaView.extend({
             x: label.getWidth() / 2,
             y: label.getHeight() / 2
         });
-        labelGroup.add(label);
+        this.labelGroup.add(label);
     },
 
-    _addWedge: function(semitone, index) {
+    _addWedge: function(pitch, index) {
         var rotation = startRotation + (eachSectionDegrees * index);
         var wedge = new Konva.Wedge({
             x: 250,
@@ -59,8 +89,8 @@ module.exports = Backbone.KonvaView.extend({
             radius: 150,
             angle: eachSectionDegrees,
             name: 'note-wedge',
-            id: 'note-' + semitone.get('note'),
-            fill: semitone.get('color'),
+            id: 'note-' + pitch.get('note'),
+            fill: pitch.get('color'),
             rotation: rotation,
             startRotation: rotation,
             scale: {
@@ -69,53 +99,14 @@ module.exports = Backbone.KonvaView.extend({
             },
             startScale: 1
         });
-        group.add(wedge);
+        this.wedgeGroup.add(wedge);
     },
 
-    getAngle: function(x, y, angle, length) {
-        var radians = angle * (Math.PI / 180);
-        return { 
-            x: x + length * Math.cos(radians), 
-            y: y + length * Math.sin(radians) 
-        };
-    },
-
-    events: {
-        'mouseover .note-wedge': function(e) {
-            var wedge = e.target;
-
-            wedge.moveTo(this.mouseoverLayer);
-            
-            var scale = 1.15;
-            var newAngle = eachSectionDegrees * scale;
-            var newRotation = wedge.getAttr('startRotation') - ((eachSectionDegrees * scale) / 2) + (eachSectionDegrees /2)
- 
-            tween = new Konva.Tween({
-                node: wedge,
-                duration: 0.5,
-                easing: Konva.Easings.ElasticEaseOut,
-                scaleX: scale,
-                scaleY: scale,
-                angle: newAngle,
-                rotation: newRotation
-            });
-            tween.play();
-            this.stage.draw();
-        },
-        'mouseout .note-wedge': function(e) {
-            var wedge = e.target;
-            this.resetWedge(wedge);
-        },
-        'click .note-wedge': function(e) {
-            var wedge = e.target;
-            this.trigger('change:tonic', wedge.getAttr('id').split('-')[1]);
-        }
-    },
-
-    resetWedge: function(wedge) {
+    _resetWedge: function(e) {
+        var wedge = e.target;
         wedge.moveTo(this.baseLayer);
-        if(tween) {
-            tween.pause();
+        if(this.currentTween) {
+            this.currentTween.pause();
         }
 
         wedge.setAttrs({
@@ -127,18 +118,8 @@ module.exports = Backbone.KonvaView.extend({
         this.stage.draw();
     },
 
-    render: function() {
-        this.baseLayer.add(this.el);
-        this.baseLayer.add(labelGroup);
-        this.stage.draw();
-    },
-
-    destroy: function() {
-        this.trigger('destroy');
-        this.undelegateEvents();
-        group.destroyChildren();
-        group.destroy();
-        labelGroup.destroyChildren();
-        labelGroup.destroy();
+    onDestroy: function() {
+        this.wedgeGroup.destroyChildren();
+        this.labelGroup.destroyChildren();
     }
 }); 

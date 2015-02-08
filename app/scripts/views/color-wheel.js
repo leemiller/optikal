@@ -132,10 +132,11 @@ module.exports = Backbone.KonvaView.extend({
     },
 
     destroy: function() {
+        this.trigger('destroy');
         this.undelegateEvents();
         group.destroyChildren();
         group.destroy();
-        this.baseLayer.destroy();
-        this.mouseoverLayer.destroy();
+        labelGroup.destroyChildren();
+        labelGroup.destroy();
     }
 }); 

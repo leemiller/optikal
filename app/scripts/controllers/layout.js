@@ -37,9 +37,7 @@ module.exports = Backbone.Marionette.Controller.extend({
 
     _changeTonic: function(newTonic) {
         this._clearPreviousWheel();
-        this._initializeStageAndLayers();
         this._showColorWheel(newTonic);
-        this._showConstellation();
     },
 
     _initializeStageAndLayers: function() {
@@ -58,11 +56,9 @@ module.exports = Backbone.Marionette.Controller.extend({
         if (_.isNull(this.wheel)) return;
         this.wheel.off();
         this.wheel.destroy();
-        this.baseLayer.destroy();
-        this.mouseoverLayer.destroy();
-        this.stage.clear();
-        this.stage.destroy();
-        this.stage = null;
+        this.baseLayer.destroyChildren();
+        this.mouseoverLayer.destroyChildren();
+        this.stage.draw();
     },
 
     _showColorWheel: function(tonic) {

@@ -1,6 +1,6 @@
 module.exports = {
     defaultTonic: 'C',
-    allPitches: 'A A# B C C# D D# E F F# G G#',
+    allPitches: ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
     defaultMode: 'Ionian',
     allModes: {
         Ionian: [0, 2, 4, 5, 7, 9, 11],

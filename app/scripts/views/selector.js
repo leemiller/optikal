@@ -29,7 +29,7 @@ module.exports = Backbone.Marionette.ItemView.extend({
 
     serializeData: function() {
         return {
-            notes: config.allPitches.split(' '),
+            notes: config.allPitches,
             modes: _.keys(config.allModes)
         };
     }

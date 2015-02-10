@@ -1,5 +1,6 @@
 var template = require('./templates/item-selector');
 var config = require('config');
+var Bus = require('bus');
 module.exports = Backbone.Marionette.ItemView.extend({
     tagName: 'div',
     className: 'selector-container',
@@ -15,12 +16,18 @@ module.exports = Backbone.Marionette.ItemView.extend({
         'change @ui.modeSelect': 'changeMode'
     },
 
+    initialize: function() {
+        Bus.Event.on('change:tonic', this._updateTonic, this);
+    },
+
     changeMode: function(event) {
-        this.trigger('change:mode', $(event.currentTarget).val());
+        var newMode = $(event.currentTarget).val();
+        Bus.Event.trigger('change:mode', newMode);
     },
 
     changeTonic: function(event) {
-        this.trigger('change:tonic', $(event.currentTarget).val());
+        var newTonic = $(event.currentTarget).val();
+        Bus.Event.trigger('change:tonic', newTonic);
     },
 
     onRender: function() {
@@ -32,5 +39,13 @@ module.exports = Backbone.Marionette.ItemView.extend({
             notes: config.allPitches,
             modes: _.keys(config.allModes)
         };
+    },
+
+    _updateTonic: function(newTonic) {
+        this.ui.tonicSelect.val(newTonic);
+    },
+
+    _updateMode: function(newMode) {
+        this.ui.modeSelect.val(newMode);
     }
 });

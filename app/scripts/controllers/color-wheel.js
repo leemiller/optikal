@@ -1,13 +1,8 @@
 var ColorWheelView = require('scripts/views/color-wheel');
-var Pitches = require('scripts/collections/pitches');
 var ConstellationView = require('../views/constellation');
 var config = require('config');
+var defaults = require('defaults');
 var Bus = require('bus');
-
-var allChromaticScales = {};
-_.each(config.allPitches, function(tonic) {
-    allChromaticScales[tonic] = new Pitches(tonic);
-});
 
 module.exports = Backbone.Marionette.Controller.extend({
     baseLayer: null,
@@ -33,7 +28,7 @@ module.exports = Backbone.Marionette.Controller.extend({
         Bus.Event.on('change:tonic', this._changeTonic, this);
         Bus.Event.on('change:mode', this._changeMode, this);
 
-        this._showColorWheel(config.defaultTonic);
+        this._showColorWheel(defaults.tonic);
         this._showConstellation();
     },
 
@@ -43,7 +38,7 @@ module.exports = Backbone.Marionette.Controller.extend({
         this.constellation.destroy();
         this.constellationLayer.destroyChildren();
         this.stage.draw();
-        var modePositions = config.allModes[newMode];
+        var modePositions = config.modes[newMode];
         this.constellation = new ConstellationView({
             stage: this.stage,
             baseLayer: this.constellationLayer,
@@ -71,14 +66,14 @@ module.exports = Backbone.Marionette.Controller.extend({
             stage: this.stage,
             baseLayer: this.baseLayer,
             mouseoverLayer: this.mouseoverLayer, 
-            collection: allChromaticScales[tonic]
+            collection: config.chromaticScales[tonic]
         });
     },
 
     _showConstellation: function() {
         this.constellationLayer = new Konva.Layer();
         this.stage.add(this.constellationLayer);
-        var defaultMode = config.allModes[config.defaultMode];
+        var defaultMode = config.modes[defaults.mode];
         this.constellation = new ConstellationView({
             stage: this.stage,
             baseLayer: this.constellationLayer,

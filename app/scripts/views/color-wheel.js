@@ -56,23 +56,23 @@ module.exports = KonvaView.extend({
     _addToGroup: function() {
         this.wedgeGroup = new Konva.Group();
         this.labelGroup = new Konva.Group();
-        this.collection.each(function(pitch, index) {
-            this._addWedge(pitch, index);
-            this._addLabel(pitch, index);
+        this.collection.each(function(note, index) {
+            this._addWedge(note, index);
+            this._addLabel(note, index);
         }, this);
         this.group.add(this.wedgeGroup);
         this.group.add(this.labelGroup);
     },
 
-    _addLabel: function(pitch, index) {
+    _addLabel: function(note, index) {
         var startRot = -90;
         var rotation = startRot + (eachSectionDegrees * index);
         var pos = this.getPositionFromAngle(250, 250, rotation, 200);
         var label = new Konva.Text({
             x: pos.x,
             y: pos.y,
-            text: pitch.get('note'),
-            id: 'label-' + pitch.get('note'),
+            text: note.get('name'),
+            id: 'label-' + note.get('name'),
             fontSize: 24,
             fill: 'black'
         });
@@ -83,7 +83,7 @@ module.exports = KonvaView.extend({
         this.labelGroup.add(label);
     },
 
-    _addWedge: function(pitch, index) {
+    _addWedge: function(note, index) {
         var rotation = startRotation + (eachSectionDegrees * index);
         var wedge = new Konva.Wedge({
             x: 250,
@@ -91,8 +91,8 @@ module.exports = KonvaView.extend({
             radius: 150,
             angle: eachSectionDegrees,
             name: 'note-wedge',
-            id: 'note-' + pitch.get('note'),
-            fill: pitch.get('color'),
+            id: 'note-' + note.get('name'),
+            fill: note.get('color'),
             rotation: rotation,
             startRotation: rotation,
             scale: {

@@ -1,5 +1,6 @@
 var template = require('./templates/item-selector');
 var config = require('config');
+var defaults = require('defaults');
 var Bus = require('bus');
 module.exports = Backbone.Marionette.ItemView.extend({
     tagName: 'div',
@@ -31,13 +32,13 @@ module.exports = Backbone.Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        this.ui.tonicSelect.val(config.defaultTonic);
+        this.ui.tonicSelect.val(defaults.tonic);
     },
 
     serializeData: function() {
         return {
-            notes: config.allPitches,
-            modes: _.keys(config.allModes)
+            notes: config.notes,
+            modes: _.keys(config.modes)
         };
     },
 
@@ -47,5 +48,10 @@ module.exports = Backbone.Marionette.ItemView.extend({
 
     _updateMode: function(newMode) {
         this.ui.modeSelect.val(newMode);
+    },
+
+    onDestroy: function() {
+        Bus.Event.off('change:tonic', this._updateTonic, this);
+        Bus.Event.off('change:mode', this._updateMode, this);
     }
 });

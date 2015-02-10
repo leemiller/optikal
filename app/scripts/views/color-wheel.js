@@ -2,6 +2,7 @@ var eachSectionDegrees = 360 / 12;
 var startRotation = -90 - (eachSectionDegrees / 2);
 
 var KonvaView = require('./konva');
+var Bus = require('bus');
 
 module.exports = KonvaView.extend({
     wedgeGroup: null,
@@ -26,7 +27,8 @@ module.exports = KonvaView.extend({
 
     _changeTonic: function(e) {
         var wedge = e.target;
-        this.trigger('change:tonic', wedge.getAttr('id').split('-')[1]);
+        var newTonic = wedge.getAttr('id').split('-')[1];
+        Bus.Event.trigger('change:tonic', newTonic);
     },
 
     _scaleUpWedge: function(e) {

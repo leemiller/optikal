@@ -20,67 +20,73 @@ module.exports = KonvaView.extend({
 
         this.render();
 
-        Bus.Event.on('note:highlighted', function(note) {
-            var notes = this.noteGroup.find('.' + note);
+        Bus.Event.on('note:highlighted', this._highlightSelectedNotes, this);
 
-            _.each(this.currentTweens, function(tween) {
-                tween.destroy();
-            });
-            var mouseoverLayer = this.mouseoverLayer;
-            notes.each(function(noteNode) {
-                noteNode.moveTo(mouseoverLayer);
-                var color = noteNode.getAttr('color');
-                noteNode.setAttrs({
-                    shadowBlur: 10,
-                    shadowEnabled: true,
-                    shadowColor: color,
-                    opacity: 1
-                });
-            });
-            this.stage.draw();
-        }, this);
+        Bus.Event.on('note:unhighlighted', this._unhighlightNotes, this);
 
-        Bus.Event.on('note:unhighlighted', function(note) {
-            var notes = this.mouseoverLayer.find('.' + note);
+        Bus.Event.on('change:mode', this._changeMode, this);
+    },
 
-            _.each(this.currentTweens, function(tween) {
-                tween.destroy();
+    _changeMode: function(newMode) {
+        this.noteGroup.children.each(function(noteNode) {
+            noteNode.setAttrs({
+                opacity: 0.1,
+                initialOpacity: 0.1
             });
-            var noteGroup = this.noteGroup;
-            notes.each(function(noteNode) {
-                noteNode.moveTo(noteGroup);
-                var initialOpacity = noteNode.getAttr('initialOpacity');
-                noteNode.setAttrs({
-                    opacity: initialOpacity,
-                    shadowEnabled: false
-                });
+        });
+        var positions = config.modes[newMode];
+        var currentTonic = Bus.Reqres.request('current:tonic');
+        var scale = config.chromaticScales[currentTonic];
+        var nodes = [];
+        var nodesToFind = _.map(positions, function(position) {
+            return '.note-' + scale.at(position).get('name');
+        }).join(',');
+        var notes = this.noteGroup.find(nodesToFind);
+        notes.each(function(noteNode) {
+            noteNode.setAttrs({
+                opacity: 1,
+                initialOpacity: 1
             });
-            this.stage.draw();
-        }, this);
+        });
+        this.stage.draw();
+    },
 
-        Bus.Event.on('change:mode', function(newMode) {
-            this.noteGroup.children.each(function(noteNode) {
-                noteNode.setAttrs({
-                    opacity: 0.1,
-                    initialOpacity: 0.1
-                });
+    _unhighlightNotes: function(note) {
+        var notes = this.mouseoverLayer.find('.' + note);
+
+        _.each(this.currentTweens, function(tween) {
+            tween.destroy();
+        });
+        var noteGroup = this.noteGroup;
+        notes.each(function(noteNode) {
+            noteNode.moveTo(noteGroup);
+            var initialOpacity = noteNode.getAttr('initialOpacity');
+            noteNode.setAttrs({
+                opacity: initialOpacity,
+                shadowEnabled: false
             });
-            var positions = config.modes[newMode];
-            var currentTonic = Bus.Reqres.request('current:tonic');
-            var scale = config.chromaticScales[currentTonic];
-            var nodes = [];
-            var nodesToFind = _.map(positions, function(position) {
-                return '.note-' + scale.at(position).get('name');
-            }).join(',');
-            var notes = this.noteGroup.find(nodesToFind);
-            notes.each(function(noteNode) {
-                noteNode.setAttrs({
-                    opacity: 1,
-                    initialOpacity: 1
-                });
+        });
+        this.stage.draw();
+    },
+
+    _highlightSelectedNotes: function(note) {
+        var notes = this.noteGroup.find('.' + note);
+
+        _.each(this.currentTweens, function(tween) {
+            tween.destroy();
+        });
+        var mouseoverLayer = this.mouseoverLayer;
+        notes.each(function(noteNode) {
+            noteNode.moveTo(mouseoverLayer);
+            var color = noteNode.getAttr('color');
+            noteNode.setAttrs({
+                shadowBlur: 10,
+                shadowEnabled: true,
+                shadowColor: color,
+                opacity: 1
             });
-            this.stage.draw();
-        }, this);
+        });
+        this.stage.draw();
     },
 
     _addNut: function(string, index, settings) {
@@ -170,5 +176,10 @@ module.exports = KonvaView.extend({
         this.fretGroup.destroyChildren();
         this.noteGroup.destroyChildren();
         this.stringGroup.destroyChildren();
+
+        Bus.Event.off('note:highlighted', this._highlightSelectedNotes, this);
+        Bus.Event.off('note:unhighlighted', this._unhighlightNotes, this);
+        Bus.Event.off('change:mode', this._changeMode, this);
+
     }
 }); 

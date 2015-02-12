@@ -34,6 +34,8 @@ module.exports = KonvaView.extend({
     _scaleUpWedge: function(e) {
         var wedge = e.target;
 
+        Bus.Event.trigger('note:highlighted', wedge.getAttr('id'));
+
         wedge.moveTo(this.mouseoverLayer);
         
         var scale = 1.15;
@@ -106,6 +108,7 @@ module.exports = KonvaView.extend({
 
     _resetWedge: function(e) {
         var wedge = e.target;
+        Bus.Event.trigger('note:unhighlighted', wedge.getAttr('id'));
         wedge.moveTo(this.baseLayer);
         if(this.currentTween) {
             this.currentTween.pause();

@@ -9,16 +9,23 @@ module.exports = Backbone.Marionette.ItemView.extend({
 
     ui: {
         tonicSelect: 'select.tonic',
-        modeSelect: 'select.mode'
+        modeSelect: 'select.mode',
+        instrumentSelect: 'select.instrument'
     },
 
     events: {
         'change @ui.tonicSelect': 'changeTonic',
-        'change @ui.modeSelect': 'changeMode'
+        'change @ui.modeSelect': 'changeMode',
+        'change @ui.instrumentSelect': 'changeInstrument'
     },
 
     initialize: function() {
         Bus.Event.on('change:tonic', this._updateTonic, this);
+    },
+
+    changeInstrument: function(event) {
+        var newInstrument = $(event.currentTarget).val();
+        Bus.Event.trigger('change:instrument', newInstrument);
     },
 
     changeMode: function(event) {
@@ -32,13 +39,16 @@ module.exports = Backbone.Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        this.ui.tonicSelect.val(defaults.tonic);
+        Bus.Event.trigger('change:instrument', defaults.instrument);
+        Bus.Event.trigger('change:mode', defaults.mode);
+        Bus.Event.trigger('change:tonic', defaults.tonic);
     },
 
     serializeData: function() {
         return {
             notes: config.notes,
-            modes: _.keys(config.modes)
+            modes: _.keys(config.modes),
+            instruments: _.keys(config.instruments)
         };
     },
 

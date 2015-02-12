@@ -48,6 +48,8 @@ module.exports = Backbone.Marionette.Controller.extend({
     _changeInstrument: function(newInstrument) {
         this._clearPreviousInstrument();
         this._showInstrument(newInstrument);
+
+        Bus.Event.trigger('change:mode', Bus.Reqres.request('current:mode'));
     },
 
     _clearPreviousInstrument: function() {

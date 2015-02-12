@@ -6,12 +6,12 @@ describe('fretted string', function() {
         defaultFrettedString.get('tonic').should.equal('C');
         done();
     });
-    it('should default to 12 frets', function(done) {
-        defaultFrettedString.get('frets').should.equal(12);
+    it('should default to 20 frets', function(done) {
+        defaultFrettedString.get('frets').should.equal(20);
         done();
     });
     it('should print out a list of notes', function(done) {
-        defaultFrettedString.getNotes().should.equal('C C# D D# E F F# G G# A A# B C');
+        defaultFrettedString.get('noteNames').join(' ').should.equal('C C# D D# E F F# G G# A A# B C C# D D# E F F# G G#');
         done();
     });
     it('should print out a list of 24 notes', function(done) {
@@ -19,7 +19,7 @@ describe('fretted string', function() {
             frets: 24
         });
         frettedString.get('frets').should.equal(24);
-        frettedString.getNotes().should.equal('C C# D D# E F F# G G# A A# B C C# D D# E F F# G G# A A# B C');
+        frettedString.get('noteNames').join(' ').should.equal('C C# D D# E F F# G G# A A# B C C# D D# E F F# G G# A A# B C');
         done();
     });
     it('should allow any note to be the tonic', function(done) {
@@ -27,7 +27,7 @@ describe('fretted string', function() {
             tonic: 'F#'
         });
         frettedString.get('tonic').should.equal('F#');
-        frettedString.getNotes().should.equal('F# G G# A A# B C C# D D# E F F#');
+        frettedString.get('noteNames').join(' ').should.equal('F# G G# A A# B C C# D D# E F F# G G# A A# B C C# D');
         done();
     });
 });

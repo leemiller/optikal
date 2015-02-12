@@ -6,27 +6,24 @@ module.exports = Backbone.Model.extend({
 
     defaults: {
         tonic: defaults.tonic,
-        frets: defaults.instruments['fretted-string'].frets,
-        chromaticScale: null,
+        frets: config.instruments[defaults.instrument].frets
     },
 
     initialize: function(options) {
         var chromaticScale = config.chromaticScales[this.get('tonic')];
-        this.set('chromaticScale', chromaticScale);
         var notes = [];
-        for (var i = 0; i <= this.get('frets'); i++) {
-            (function(i) {
-                var index = i >= chromaticScale.length ? i % chromaticScale.length : i;
-                notes.push(chromaticScale.at(index));
-            })(i);
-        }
-        this._notes = notes;
-    },
+        var numberOfNotesInScale = chromaticScale.length;
+        var frets = this.get('frets') + 1;
+        _(frets).range().map(function(fret) {
+            var scaleIndex = fret >= numberOfNotesInScale ? fret % numberOfNotesInScale : fret;
+            notes.push(chromaticScale.at(scaleIndex));
+        });
 
-    getNotes: function() {
-        return _.map(this._notes, function(note) {
+        this._notes = notes;
+        this.set('notes', notes);
+        this.set('noteNames', _.map(notes, function(note) {
             return note.get('name');
-        }).join(' ');
+        }));
     },
 
     sync: function() {

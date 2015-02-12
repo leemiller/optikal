@@ -5,18 +5,21 @@ var config = require('config');
 var FrettedStringCollection = Backbone.Collection.extend({
     model: FrettedStringModel,
     url: '/fretted-strings',
-    noteCache: null,
+    settings: null,
+    fretDistanceMap: null,
+    displayWidth: 0,
+    displayHeight: 0,
     
     initialize: function(models, options) {
         this.options = options || {};
-        this.noteCache = [];
-        var strings = this.options.configuration;
-        var frets = this.options.frets;
+        this.settings = options.settings;
 
-        _.each(strings, function(tonic) {
+        this._setSettings();
+
+        _.each(this.settings.strings, function(tonic) {
             this.create({
                 tonic: tonic,
-                frets: frets
+                frets: this.settings.frets
             });
         }, this);
     },
@@ -25,16 +28,47 @@ var FrettedStringCollection = Backbone.Collection.extend({
         return this.options.frets;
     },
 
+    getDisplayHeight: function() {
+        return this.settings.displayHeight;
+    },
+
+    getDisplayWidth: function() {
+        return this.settings.displayWidth;
+    },
+
+    _setSettings: function() {
+        var strings = this.settings.strings;
+        var frets = this.settings.frets;
+        var scaleLength = this.settings.lengthPerFret * frets;
+        var distance = 0;
+        var fretDistanceMap = {};
+        for (var fret = 1; fret <= frets; fret++) {
+            var location = scaleLength - distance;
+            var scaleFactor = location / 17.817;
+            distance += scaleFactor;
+            fretDistanceMap[fret] = {
+                distance: distance,
+                width: scaleFactor
+            };
+        }
+        var endPadding = (2 * this.settings.padding);
+        var totalLength = distance + endPadding;
+
+        this.settings.displayWidth = totalLength;
+        this.settings.fretDistanceMap = fretDistanceMap;
+        this.settings.displayHeight = (strings.length * this.settings.stringHeight) + endPadding;
+    },  
+
     sync: function() {
 
     }
 });
 
-module.exports = function(stringConfigs, frets) {
-    stringConfigs = stringConfigs || defaults.instruments['fretted-string'].strings;
-    frets = frets || defaults.instruments['fretted-string'].frets;
+var defaultInstrument = config.instruments[defaults.instrument];
+
+module.exports = function(settings) {
+    settings = settings || defaultInstrument;
     return new FrettedStringCollection(null, {
-        configuration: stringConfigs,
-        frets: frets
+        settings: settings
     });
 };

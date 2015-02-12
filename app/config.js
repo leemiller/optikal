@@ -18,5 +18,27 @@ module.exports = {
         Locrian: [0, 1, 3, 5, 6, 8, 10],
         'Iwato Scale': [0, 1, 10, 5, 6],
         'Major Pentatonic Scale': [0, 9, 2, 4, 7]
+    },
+    instruments: {
+        Bass: {
+            type: 'fretted-string',
+            frets: 20,
+            strings: ['G', 'D', 'A', 'E'],
+            lengthPerFret: 60,
+            stringHeight: 40,
+            padding: 40,
+            nutWidth: 15,
+            fretWidth: 6
+        },
+        Guitar: {
+            type: 'fretted-string',
+            frets: 22,
+            strings: ['E', 'B', 'G', 'D', 'A', 'E'],
+            lengthPerFret: 50,
+            stringHeight: 25,
+            padding: 30,
+            nutWidth: 15,
+            fretWidth: 4
+        }
     }
 };

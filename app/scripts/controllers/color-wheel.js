@@ -11,6 +11,8 @@ module.exports = Backbone.Marionette.Controller.extend({
     stage: null,
     wheel: null,
     constellation: null,
+    _currentMode: defaults.mode,
+    _currentTonic: defaults.tonic,
 
     initialize: function(options) {
         this.options = options || {};
@@ -23,31 +25,45 @@ module.exports = Backbone.Marionette.Controller.extend({
 
         this.baseLayer = new Konva.Layer();
         this.mouseoverLayer = new Konva.Layer();
-        this.stage.add(this.baseLayer, this.mouseoverLayer);
+        this.constellationLayer = new Konva.Layer();
+        this.stage.add(this.baseLayer, this.mouseoverLayer, this.constellationLayer);
 
         Bus.Event.on('change:tonic', this._changeTonic, this);
         Bus.Event.on('change:mode', this._changeMode, this);
 
-        this._showColorWheel(defaults.tonic);
-        this._showConstellation();
+        Bus.Reqres.setHandler('current:tonic', function() {
+            return this._currentTonic;
+        }, this);
+        Bus.Reqres.setHandler('current:mode', function() {
+            return this._currentMode;
+        }, this);
+
+        // this._showColorWheel(defaults.tonic);
+        // this._showConstellation();
     },
 
     _changeMode: function(newMode) {
-        if (_.isNull(this.constellation)) return;
-        this.constellation.off();
-        this.constellation.destroy();
-        this.constellationLayer.destroyChildren();
-        this.stage.draw();
+        this._currentMode = newMode;
+        this._clearPreviousConstellation();
         var modePositions = config.modes[newMode];
         this.constellation = new ConstellationView({
             stage: this.stage,
             baseLayer: this.constellationLayer,
             collection: modePositions
         });
+        //this.stage.draw();
+    },
+
+    _clearPreviousConstellation: function() {
+        if (_.isNull(this.constellation)) return;
+        this.constellation.off();
+        this.constellation.destroy();
+        this.constellationLayer.destroyChildren();
         this.stage.draw();
     },
 
     _changeTonic: function(newTonic) {
+        this._currentTonic = newTonic;
         this._clearPreviousWheel();
         this._showColorWheel(newTonic);
     },
@@ -68,16 +84,5 @@ module.exports = Backbone.Marionette.Controller.extend({
             mouseoverLayer: this.mouseoverLayer, 
             collection: config.chromaticScales[tonic]
         });
-    },
-
-    _showConstellation: function() {
-        this.constellationLayer = new Konva.Layer();
-        this.stage.add(this.constellationLayer);
-        var defaultMode = config.modes[defaults.mode];
-        this.constellation = new ConstellationView({
-            stage: this.stage,
-            baseLayer: this.constellationLayer,
-            collection: defaultMode
-        });
     }
-})
+});

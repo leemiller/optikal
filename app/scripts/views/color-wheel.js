@@ -34,7 +34,7 @@ module.exports = KonvaView.extend({
     _scaleUpWedge: function(e) {
         var wedge = e.target;
 
-        Bus.Event.trigger('note:highlighted', wedge.getAttr('id'));
+        Bus.Event.trigger('note:highlighted', wedge.getAttr('note'));
 
         wedge.moveTo(this.mouseoverLayer);
         
@@ -95,6 +95,7 @@ module.exports = KonvaView.extend({
             name: 'note-wedge',
             id: 'note-' + note.get('name'),
             fill: note.get('color'),
+            note: note.get('name'),
             rotation: rotation,
             startRotation: rotation,
             scale: {
@@ -108,7 +109,7 @@ module.exports = KonvaView.extend({
 
     _resetWedge: function(e) {
         var wedge = e.target;
-        Bus.Event.trigger('note:unhighlighted', wedge.getAttr('id'));
+        Bus.Event.trigger('note:unhighlighted', wedge.getAttr('note'));
         wedge.moveTo(this.baseLayer);
         if(this.currentTween) {
             this.currentTween.pause();

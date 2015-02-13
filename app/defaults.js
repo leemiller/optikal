@@ -1,5 +1,5 @@
 module.exports = {
     tonic: 'C',
-    mode: 'Ionian',
+    scale: 'Ionian',
     instrument: 'Bass'
 };

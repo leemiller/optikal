@@ -22,8 +22,8 @@ module.exports = KonvaView.extend({
 
         var endPoints = [];
         var labelPoints = [];
-        _.each(this.collection, function(pitchNumber) {
-            var rotation = startRotation + (eachSectionDegrees * pitchNumber);
+        _.each(this.collection, function(noteNumber) {
+            var rotation = startRotation + (eachSectionDegrees * noteNumber);
             var endPoint = this.getPositionFromAngle(250, 250, rotation, 150);
             endPoints.push(endPoint);
 

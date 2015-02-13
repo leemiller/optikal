@@ -1,6 +1,6 @@
 module.exports = Backbone.Model.extend({
     defaults: {
-        note: undefined,
+        name: undefined,
         color: undefined
     },
 

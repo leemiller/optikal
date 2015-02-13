@@ -2,6 +2,7 @@ var eachSectionDegrees = 360 / 12;
 var startRotation = -90 - (eachSectionDegrees / 2);
 
 var KonvaView = require('./konva');
+var Bus = require('bus');
 
 module.exports = KonvaView.extend({
     wedgeGroup: null,
@@ -26,11 +27,14 @@ module.exports = KonvaView.extend({
 
     _changeTonic: function(e) {
         var wedge = e.target;
-        this.trigger('change:tonic', wedge.getAttr('id').split('-')[1]);
+        var newTonic = wedge.getAttr('id').split('-')[1];
+        Bus.Event.trigger('change:tonic', newTonic);
     },
 
     _scaleUpWedge: function(e) {
         var wedge = e.target;
+
+        Bus.Event.trigger('note:highlighted', wedge.getAttr('note'));
 
         wedge.moveTo(this.mouseoverLayer);
         
@@ -54,23 +58,23 @@ module.exports = KonvaView.extend({
     _addToGroup: function() {
         this.wedgeGroup = new Konva.Group();
         this.labelGroup = new Konva.Group();
-        this.collection.each(function(pitch, index) {
-            this._addWedge(pitch, index);
-            this._addLabel(pitch, index);
+        this.collection.each(function(note, index) {
+            this._addWedge(note, index);
+            this._addLabel(note, index);
         }, this);
         this.group.add(this.wedgeGroup);
         this.group.add(this.labelGroup);
     },
 
-    _addLabel: function(pitch, index) {
+    _addLabel: function(note, index) {
         var startRot = -90;
         var rotation = startRot + (eachSectionDegrees * index);
         var pos = this.getPositionFromAngle(250, 250, rotation, 200);
         var label = new Konva.Text({
             x: pos.x,
             y: pos.y,
-            text: pitch.get('note'),
-            id: 'label-' + pitch.get('note'),
+            text: note.get('name'),
+            id: 'label-' + note.get('name'),
             fontSize: 24,
             fill: 'black'
         });
@@ -81,7 +85,7 @@ module.exports = KonvaView.extend({
         this.labelGroup.add(label);
     },
 
-    _addWedge: function(pitch, index) {
+    _addWedge: function(note, index) {
         var rotation = startRotation + (eachSectionDegrees * index);
         var wedge = new Konva.Wedge({
             x: 250,
@@ -89,8 +93,9 @@ module.exports = KonvaView.extend({
             radius: 150,
             angle: eachSectionDegrees,
             name: 'note-wedge',
-            id: 'note-' + pitch.get('note'),
-            fill: pitch.get('color'),
+            id: 'note-' + note.get('name'),
+            fill: note.get('color'),
+            note: note.get('name'),
             rotation: rotation,
             startRotation: rotation,
             scale: {
@@ -104,6 +109,7 @@ module.exports = KonvaView.extend({
 
     _resetWedge: function(e) {
         var wedge = e.target;
+        Bus.Event.trigger('note:unhighlighted', wedge.getAttr('note'));
         wedge.moveTo(this.baseLayer);
         if(this.currentTween) {
             this.currentTween.pause();

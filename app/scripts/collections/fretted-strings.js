@@ -25,15 +25,7 @@ var FrettedStringCollection = Backbone.Collection.extend({
     },
 
     getFrets: function() {
-        return this.options.frets;
-    },
-
-    getDisplayHeight: function() {
-        return this.settings.displayHeight;
-    },
-
-    getDisplayWidth: function() {
-        return this.settings.displayWidth;
+        return this.options.settings.frets;
     },
 
     _setSettings: function() {
@@ -54,9 +46,12 @@ var FrettedStringCollection = Backbone.Collection.extend({
         var endPadding = (2 * this.settings.padding);
         var totalLength = distance + endPadding;
 
-        this.settings.displayWidth = totalLength;
+        this.settings.displayWidth = distance + endPadding;
+        this.settings.fretboardWidth = distance;
         this.settings.fretDistanceMap = fretDistanceMap;
-        this.settings.displayHeight = (strings.length * this.settings.stringHeight) + endPadding;
+        this.settings.fretboardHeight = strings.length * this.settings.stringHeight
+        this.settings.displayHeight = this.settings.fretboardHeight + endPadding;
+
     },  
 
     sync: function() {

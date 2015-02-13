@@ -10,8 +10,4 @@ describe('fretted strings', function() {
         defaultFrettedStrings.getFrets().should.equal(20);
         done();
     });
-    it('should produce a display width', function(done) {
-        defaultFrettedStrings.getDisplayWidth().should.equal(745.0229699288578);
-        done();
-    });
 });

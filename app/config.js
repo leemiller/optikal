@@ -28,7 +28,9 @@ module.exports = {
             stringHeight: 40,
             padding: 40,
             nutWidth: 15,
-            fretWidth: 6
+            fretWidth: 6,
+            fretMarkers: [1, 3, 5, 7, 9, 12, 15, 17, 19],
+            fretboardColor: '#f2e9cc'
         },
         Guitar: {
             type: 'fretted-string',
@@ -38,7 +40,9 @@ module.exports = {
             stringHeight: 25,
             padding: 30,
             nutWidth: 15,
-            fretWidth: 4
+            fretWidth: 4,
+            fretMarkers: [3, 5, 7, 9, 12, 15, 17, 19, 21],
+            fretboardColor: '#f2e9cc'
         }
     }
 };

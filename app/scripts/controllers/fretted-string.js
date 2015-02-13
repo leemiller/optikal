@@ -13,14 +13,22 @@ module.exports = Backbone.Marionette.Controller.extend({
         this.options = options || {};
 
         Bus.Event.on('change:instrument', this._changeInstrument, this);
+        Bus.Event.on('change:mode', this._changeMode, this);
+        Bus.Event.on('change:tonic', function() {
+            this.frettedString._changeMode(Bus.Reqres.request('current:mode'));
+        }, this);
+    },
+
+    _changeMode: function(newMode) {
+        this.frettedString._changeMode(newMode);
     },
 
     _showInstrument: function(newInstrument) {
         var stringSettings = config.instruments[newInstrument];
         var strings = new FrettedStrings(stringSettings);
         var settings = {
-            height: strings.getDisplayHeight(),
-            width: strings.getDisplayWidth()
+            height: strings.settings.displayHeight,
+            width: strings.settings.displayWidth
         };
 
         this._initializeStageAndLayers(settings);
@@ -39,7 +47,6 @@ module.exports = Backbone.Marionette.Controller.extend({
             width: settings.width,
             height: settings.height
         });
-
         this.baseLayer = new Konva.Layer();
         this.mouseoverLayer = new Konva.Layer();
         this.stage.add(this.baseLayer, this.mouseoverLayer);
@@ -49,7 +56,7 @@ module.exports = Backbone.Marionette.Controller.extend({
         this._clearPreviousInstrument();
         this._showInstrument(newInstrument);
 
-        Bus.Event.trigger('change:mode', Bus.Reqres.request('current:mode'));
+        this.frettedString._changeMode(Bus.Reqres.request('current:mode'));
     },
 
     _clearPreviousInstrument: function() {

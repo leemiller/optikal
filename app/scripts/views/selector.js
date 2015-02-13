@@ -21,6 +21,7 @@ module.exports = Backbone.Marionette.ItemView.extend({
 
     initialize: function() {
         Bus.Event.on('change:tonic', this._updateTonic, this);
+        Bus.Event.on('change:scale', this._updateScale, this);
     },
 
     changeInstrument: function(event) {

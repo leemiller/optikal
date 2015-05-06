@@ -11,7 +11,7 @@ module.exports = Backbone.Marionette.Controller.extend({
     stage: null,
     wheel: null,
     constellation: null,
-    _currentMode: defaults.mode,
+    _currentScale: defaults.scale,
     _currentTonic: defaults.tonic,
 
     initialize: function(options) {
@@ -29,29 +29,25 @@ module.exports = Backbone.Marionette.Controller.extend({
         this.stage.add(this.baseLayer, this.mouseoverLayer, this.constellationLayer);
 
         Bus.Event.on('change:tonic', this._changeTonic, this);
-        Bus.Event.on('change:mode', this._changeMode, this);
+        Bus.Event.on('change:scale', this._changeScale, this);
 
         Bus.Reqres.setHandler('current:tonic', function() {
             return this._currentTonic;
         }, this);
-        Bus.Reqres.setHandler('current:mode', function() {
-            return this._currentMode;
+        Bus.Reqres.setHandler('current:scale', function() {
+            return this._currentScale;
         }, this);
-
-        // this._showColorWheel(defaults.tonic);
-        // this._showConstellation();
     },
 
-    _changeMode: function(newMode) {
-        this._currentMode = newMode;
+    _changeScale: function(newScale) {
+        this._currentScale = newScale;
         this._clearPreviousConstellation();
-        var modePositions = config.modes[newMode];
+        var scalePositions = config.scales[newScale];
         this.constellation = new ConstellationView({
             stage: this.stage,
             baseLayer: this.constellationLayer,
-            collection: modePositions
+            collection: scalePositions
         });
-        //this.stage.draw();
     },
 
     _clearPreviousConstellation: function() {

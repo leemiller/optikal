@@ -13,14 +13,14 @@ module.exports = Backbone.Marionette.Controller.extend({
         this.options = options || {};
 
         Bus.Event.on('change:instrument', this._changeInstrument, this);
-        Bus.Event.on('change:mode', this._changeMode, this);
+        Bus.Event.on('change:scale', this._changeScale, this);
         Bus.Event.on('change:tonic', function() {
-            this.frettedString._changeMode(Bus.Reqres.request('current:mode'));
+            this.frettedString._changeScale(Bus.Reqres.request('current:scale'));
         }, this);
     },
 
-    _changeMode: function(newMode) {
-        this.frettedString._changeMode(newMode);
+    _changeScale: function(newScale) {
+        this.frettedString._changeScale(newScale);
     },
 
     _showInstrument: function(newInstrument) {
@@ -56,7 +56,7 @@ module.exports = Backbone.Marionette.Controller.extend({
         this._clearPreviousInstrument();
         this._showInstrument(newInstrument);
 
-        this.frettedString._changeMode(Bus.Reqres.request('current:mode'));
+        this.frettedString._changeScale(Bus.Reqres.request('current:scale'));
     },
 
     _clearPreviousInstrument: function() {

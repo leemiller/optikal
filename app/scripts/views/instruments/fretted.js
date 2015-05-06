@@ -29,17 +29,17 @@ module.exports = KonvaView.extend({
 
         Bus.Event.on('note:unhighlighted', this._unhighlightNotes, this);
 
-        Bus.Event.on('change:mode', this._changeMode, this);
+        Bus.Event.on('change:scale', this._changeScale, this);
     },
 
-    _changeMode: function(newMode) {
+    _changeScale: function(newScale) {
         this.noteGroup.children.each(function(noteNode) {
             noteNode.setAttrs({
                 opacity: 0.1,
                 initialOpacity: 0.1
             });
         });
-        var positions = config.modes[newMode];
+        var positions = config.scales[newScale];
         var currentTonic = Bus.Reqres.request('current:tonic');
         var scale = config.chromaticScales[currentTonic];
         var nodes = [];
@@ -317,7 +317,7 @@ module.exports = KonvaView.extend({
 
         Bus.Event.off('note:highlighted', this._highlightSelectedNotes, this);
         Bus.Event.off('note:unhighlighted', this._unhighlightNotes, this);
-        Bus.Event.off('change:mode', this._changeMode, this);
+        Bus.Event.off('change:scale', this._changeScale, this);
 
     }
 }); 

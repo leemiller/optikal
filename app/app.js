@@ -1,6 +1,8 @@
-
-var hello = require('scripts/helloWorld').hello;
-
-console.log(hello());
-
-document.getElementById('hello').innerText = hello();
+var LayoutController = require('scripts/controllers/layout');
+var region = new Backbone.Marionette.Region({
+    el: '#main'
+});
+var layout = new LayoutController({
+    region: region
+});
+layout.show();

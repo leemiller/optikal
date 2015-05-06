@@ -55,6 +55,18 @@ module.exports = {
             fretWidth: 4,
             fretMarkers: [3, 5, 7, 9, 12, 15, 17, 19, 21],
             fretboardColor: '#f2e9cc'
+        },
+        Uke: {
+            type: 'fretted-string',
+            frets: 17,
+            strings: ['G', 'C', 'A', 'E'],
+            lengthPerFret: 60,
+            stringHeight: 30,
+            padding: 30,
+            nutWidth: 10,
+            fretWidth: 5,
+            fretMarkers: [5, 7, 10, 12, 15],
+            fretboardColor: '#f2e9cc'
         }
     }
 };

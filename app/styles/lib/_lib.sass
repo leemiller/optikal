@@ -1,7 +1,0 @@
-@function rem($target, $fontSize: $baseFontSize)
-    $num: strip-units($target/$fontSize)
-    @return $num + 0rem
-
-@function strip-units($number)
-    @return $number / ($number * 0 + 1)
-    
